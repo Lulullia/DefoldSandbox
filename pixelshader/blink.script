@@ -1,0 +1,14 @@
+function init(self)
+	go.set("#sprite", "blink_effect_trigger", vmath.vector4(1)) -- set property of "#sprite" component called "blink_effect_trigger" to vector of four components all equal to 1) = aka turn on your post-process
+
+	timer.delay(1, true, function() -- every second
+
+		go.set("#sprite", "blink_effect_trigger", vmath.vector4(1)) --blink
+
+		timer.delay(0.1, false, function()  --and after 0.1 sec
+			go.set("#sprite", "blink_effect_trigger", vmath.vector4(0))  -- turn of the post-process
+		end)
+
+	end)
+
+end

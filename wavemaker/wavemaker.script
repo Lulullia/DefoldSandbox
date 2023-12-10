@@ -1,0 +1,79 @@
+---@diagnostic disable: lowercase-global
+
+
+LineSpeed = 0.5
+EasingType = false -- false for OUT, true for IN
+Normalize = function(min, max, value)
+	return (value - min) / (max - min)
+end
+
+local marker = "marker"
+local lineFac = "line#factory"
+
+function plot(self)
+	local pos = go.get_position(marker)
+	factory.create(lineFac, pos)
+	timer.delay(self.delay, false, function()
+		plot(self)
+	end)
+end
+
+-- The higher the line speed, the shorter the delay
+function update_delay(self)
+	-- Min and max are fine-tuned to give good values for the 0.1~6 range
+	self.delay = Normalize(7.7, -30, LineSpeed) * 0.25
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	update_delay(self)
+	plot(self)
+end
+
+
+function update(self, dt)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("speed_changed") then
+		label.set_text("#markerSpeed", "Marker speed: " .. message.speed)
+	end
+end
+
+function on_input(self, action_id, action)
+
+	if action_id == hash("w")  or action_id == hash("x") then
+		LineSpeed = action_id == hash("w") and LineSpeed - 0.01 or LineSpeed + 0.01
+
+		-- Clamp between 0.1 and 6
+		if LineSpeed < 0.1 then LineSpeed = 0.1 end
+		if LineSpeed > 6 then LineSpeed = 6 end
+
+		update_delay(self)
+		label.set_text("#lineSpeed", "Line speed: " .. LineSpeed)
+		
+	elseif action_id == hash("space") and action.released then
+		EasingType = not EasingType
+		if EasingType then
+			label.set_text("#easings", [[[Switch in/out
+with space]
+A > Inback
+Z > Inbounce
+E > Incirc
+R > Incubic
+T > Inelastic
+Y > Inexpo]])
+		else
+			label.set_text("#easings", [[[Switch in/out
+with space]
+A > Outback
+Z > Outbounce
+E > Outcirc
+R > Outcubic
+T > Outelastic
+Y > Outexpo]])
+		end
+		print(EasingType)
+	end
+end
+

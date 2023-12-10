@@ -1,0 +1,11 @@
+function init(self)
+	self.time = vmath.vector4(0.0);
+	sprite.set_constant("#main", "iResolution", vmath.vector4(640.0, 1136.0, 0.0,0.0))
+	sprite.set_constant("#strands", "iResolution", vmath.vector4(640.0, 1136.0, 0.0,0.0))
+end
+
+function update(self, dt)
+	self.time.x = self.time.x + 1.0
+	go.set("#main", "iTime", self.time)
+	go.set("#strands", "iTime", self.time)
+end

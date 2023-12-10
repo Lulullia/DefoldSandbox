@@ -1,0 +1,4 @@
+material: "/builtins/materials/model.material"
+vertices: ""
+textures: "/assets/hair/hair_main.png"
+primitive_type: PRIMITIVE_TRIANGLES

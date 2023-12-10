@@ -1,0 +1,102 @@
+---@diagnostic disable: lowercase-global
+
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	
+	self.speed = 0.3
+	self.pos = go.get_position()
+	self.easing = go.EASING_OUTBACK
+end
+
+function update(self, dt)
+end
+
+function on_message(self, message_id, message, sender)
+end
+
+
+function on_input(self, action_id, action)
+
+	-- Y position
+	if action_id == hash("down") or action_id == hash("up") then
+		
+		go.cancel_animations(".")
+		
+		-- Reset everything
+		if action.released then
+			local dur = Normalize(3, 0.1, self.speed) * 1.5
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, 320, self.easing, dur)
+			return true
+			
+		else
+			self.pos.y = go.get_position().y
+			local finalSpeed
+			
+			-- Adjust speed based on current Y position; higher/lower is slowest, middle is fastest
+			if self.pos.y > 320 then
+				finalSpeed = self.speed * Normalize(640, 320, self.pos.y) * 10
+			else
+				finalSpeed = self.speed * Normalize(10, 320, self.pos.y) * 10
+			end
+			
+			-- Calculate new Y position
+			if action_id == hash("down") then
+				self.pos.y = self.pos.y - finalSpeed
+			else self.pos.y = self.pos.y + finalSpeed
+			end
+			
+			-- Clamp between 20 and 620
+			if self.pos.y < 20 then self.pos.y = 20 end
+			if self.pos.y > 620 then self.pos.y = 620 end
+			
+			-- Set new position
+			go.set(".", "position.y", self.pos.y, {})
+		end
+
+
+	-- Speed
+	elseif action_id == hash("left") or action_id == hash("right") then
+
+		self.speed = action_id == hash("left") and self.speed - 0.001 or self.speed + 0.001
+
+		-- Clamp between 0.1 and 3
+		if self.speed < 0.1 then self.speed = 0.1
+		elseif self.speed > 3 then self.speed = 3 end
+
+		msg.post("controller#script", "speed_changed", {speed = self.speed})
+	end
+		
+	-- Easing
+	if action.released then
+		if action_id == hash("a") then
+			self.easing = EasingType and go.EASING_INBACK or go.EASING_OUTBACK
+		elseif action_id == hash("z") then
+			self.easing = EasingType and go.EASING_INBOUNCE or go.EASING_OUTBOUNCE
+		elseif action_id == hash("e") then
+			self.easing = EasingType and go.EASING_INCIRC or go.EASING_OUTCIRC
+		elseif action_id == hash("r") then
+			self.easing = EasingType and go.EASING_INCUBIC or go.EASING_OUTCUBIC
+		elseif action_id == hash("t") then
+			self.easing = EasingType and go.EASING_INELASTIC or go.EASING_OUTELASTIC
+		elseif action_id == hash("y") then
+			self.easing = EasingType and go.EASING_INEXPO or go.EASING_OUTEXPO
+
+		elseif action_id == hash("q") then
+			self.easing = EasingType and go.EASING_INOUTBACK or go.EASING_OUTINBACK
+		elseif action_id == hash("s") then
+			self.easing = EasingType and go.EASING_INOUTBOUNCE or go.EASING_OUTINBOUNCE
+		elseif action_id == hash("d") then
+			self.easing = EasingType and go.EASING_INOUTCIRC or go.EASING_OUTINCIRC
+		elseif action_id == hash("f") then
+			self.easing = EasingType and go.EASING_INOUTCUBIC or go.EASING_OUTINCUBIC
+		elseif action_id == hash("g") then
+			self.easing = EasingType and go.EASING_INOUTELASTIC or go.EASING_OUTINELASTIC
+		elseif action_id == hash("h") then
+			self.easing = EasingType and go.EASING_INOUTEXPO or go.EASING_OUTINEXPO
+		end
+	end
+end
+
+function on_reload(self)
+end

@@ -1,0 +1,45 @@
+// original wind shader from https://github.com/Maujoe/godot-simple-wind-shader-2d/tree/master/assets/maujoe.simple_wind_shader_2d
+// original script modified by HungryProton so that the assets are moving differently : https://pastebin.com/VL3AfV8D
+
+uniform mediump mat4 view_proj;
+
+// positions are in world space
+attribute mediump vec4 position;
+attribute mediump vec2 texcoord0;
+
+varying mediump vec2 var_texcoord0;
+varying mediump vec4 var_position;
+
+// Wind settings.
+uniform vec4 speed; // The speed of the wind movement.
+uniform vec4 minStrength; // Range: 0.0-1.0 - The minimal strength of the wind movement.
+uniform vec4 maxStrength; // Range: 0.0-1.0 - The maximal strength of the wind movement.
+uniform vec4 strengthScale; // Scalefactor for the wind strength.
+uniform vec4 interval; // The time between minimal and maximal strength changes.
+uniform vec4 detail; // The detail (number of waves) of the wind movement.
+uniform vec4 distortion; // Range: 0.0-1.0 - The strength of geometry distortion.
+uniform vec4 heightOffset; // Range: 0.0-1.0 - The height where the wind begins to move.
+
+// If you want different moves for each asset.
+uniform vec4 offset;
+uniform lowp vec4 utime;
+
+float getWind(vec2 vertex, vec2 uv, float time){
+	float diff = pow(maxStrength.x - minStrength.x, 2.0);
+	float strength = clamp(minStrength.x + diff + sin(time / interval.x) * diff, minStrength.x, maxStrength.x) * strengthScale.x;
+	float wind = (sin(time) + cos(time * detail.x)) * strength * max(0.0, (1.0-uv.y) - heightOffset.x);
+
+	//wind = time;
+	
+	return wind; 
+}
+
+void main() {
+	float time = utime.x * speed.x + offset.x;
+	
+	vec4 v = vec4(position.xyz, 1.0);
+	v.x += getWind(position.xy, texcoord0, time);
+	
+	gl_Position = view_proj * v;
+	var_texcoord0 = texcoord0;
+}

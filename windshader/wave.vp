@@ -1,0 +1,37 @@
+uniform highp mat4 view_proj;
+
+// positions are in world space
+attribute highp vec4 position;
+attribute mediump vec2 texcoord0;
+
+varying mediump vec2 var_texcoord0;
+
+uniform lowp vec4 iTime;
+uniform lowp vec4 iResolution;
+
+// Settings
+float speed = 0.3; // Speed multiplier
+float cycles = 30.0; // Factor for how many full cycles per unit; lower is less wavy
+float amplitude = 15.0; // The "height" of the waves; lower is higher
+float constraint = 0.2; // Factor for how much the top should be constrained
+float angle = 0.0; // Tilt of the waving
+
+void main()
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 uv = position/iResolution.xy;
+
+    // Calculate amplitude
+    float calc_amplitude = max(0.0, amplitude / ((1.0 - uv.y) - constraint));
+
+    // Only wave if amplitude is not 0
+    if (calc_amplitude != 0.0) {
+        uv.x += (sin(uv.y * cycles + iTime * speed) / calc_amplitude) + (uv.y * angle);
+    } else {
+        // Even if not waving, it needs to be angled!
+        uv.x += uv.y * angle;
+    }
+    
+    gl_Position = view_proj * vec4(position.xyz, 1.0);
+    var_texcoord0 = texcoord0;
+}
