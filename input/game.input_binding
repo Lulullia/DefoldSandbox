@@ -74,6 +74,10 @@ key_trigger {
   input: KEY_H
   action: "h"
 }
+key_trigger {
+  input: KEY_M
+  action: "m"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

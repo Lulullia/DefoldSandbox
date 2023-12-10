@@ -55,25 +55,38 @@ function on_input(self, action_id, action)
 	elseif action_id == hash("space") and action.released then
 		EasingType = not EasingType
 		if EasingType then
-			label.set_text("#easings", [[[Switch in/out
-with space]
+			label.set_text("#easings", [[[Space > in/out
+switch]
 A > Inback
 Z > Inbounce
 E > Incirc
 R > Incubic
 T > Inelastic
-Y > Inexpo]])
-		else
-			label.set_text("#easings", [[[Switch in/out
-with space]
+Y > Insine]])
+			label.set_text("#altereasings", [[[Alternate]
+Q > InOutback
+S > InOutbounce
+D > InOutcirc
+F > InOutcubic
+G > InOutelastic
+H > InOutsine]])
+else
+			label.set_text("#easings", [[[Space > in/out
+switch]
 A > Outback
 Z > Outbounce
 E > Outcirc
 R > Outcubic
 T > Outelastic
-Y > Outexpo]])
-		end
-		print(EasingType)
+Y > Outsine]])
+			label.set_text("#altereasings", [[[Alternate]
+Q > OutInback
+S > OutInbounce
+D > OutIncirc
+F > OutIncubic
+G > OutInelastic
+H > OutInsine]])
+end
 	end
 end
 

@@ -7,6 +7,7 @@ function init(self)
 	self.speed = 0.3
 	self.pos = go.get_position()
 	self.easing = go.EASING_OUTBACK
+	self.freeMode = false
 end
 
 function update(self, dt)
@@ -21,6 +22,15 @@ function on_input(self, action_id, action)
 	-- Y position
 	if action_id == hash("down") or action_id == hash("up") then
 		
+		if self.freeMode then
+			if action_id == hash("down") then
+				self.pos.y = self.pos.y - self.speed
+			else self.pos.y = self.pos.y + self.speed
+			end
+			go.set(".", "position.y", self.pos.y, {})
+			return true
+		end
+
 		go.cancel_animations(".")
 		
 		-- Reset everything
@@ -69,7 +79,12 @@ function on_input(self, action_id, action)
 		
 	-- Easing
 	if action.released then
-		if action_id == hash("a") then
+		if action_id == hash("m") then
+			self.freeMode = not self.freeMode
+			self.pos.y = go.get_position().y
+			go.cancel_animations(".")
+
+		elseif action_id == hash("a") then
 			self.easing = EasingType and go.EASING_INBACK or go.EASING_OUTBACK
 		elseif action_id == hash("z") then
 			self.easing = EasingType and go.EASING_INBOUNCE or go.EASING_OUTBOUNCE
@@ -80,7 +95,7 @@ function on_input(self, action_id, action)
 		elseif action_id == hash("t") then
 			self.easing = EasingType and go.EASING_INELASTIC or go.EASING_OUTELASTIC
 		elseif action_id == hash("y") then
-			self.easing = EasingType and go.EASING_INEXPO or go.EASING_OUTEXPO
+			self.easing = EasingType and go.EASING_INSINE or go.EASING_OUTSINE
 
 		elseif action_id == hash("q") then
 			self.easing = EasingType and go.EASING_INOUTBACK or go.EASING_OUTINBACK
@@ -93,7 +108,7 @@ function on_input(self, action_id, action)
 		elseif action_id == hash("g") then
 			self.easing = EasingType and go.EASING_INOUTELASTIC or go.EASING_OUTINELASTIC
 		elseif action_id == hash("h") then
-			self.easing = EasingType and go.EASING_INOUTEXPO or go.EASING_OUTINEXPO
+			self.easing = EasingType and go.EASING_INOUTSINE or go.EASING_OUTINSINE
 		end
 	end
 end
