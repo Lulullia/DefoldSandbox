@@ -1,0 +1,160 @@
+
+local joint_settings = {
+	type = physics.JOINT_TYPE_SPRING,
+	frequency = 1000.0,
+	damping = 0
+}
+
+--[[
+So the plan is:
+- Initialize a table mesh_data with info about each joint.
+- Create a function construct_mesh(mesh_data) that will create
+	each joint.
+- Each joint's length setting will be set based on the distance
+	between body a and body b, so that it works exactly like
+	it looks in the editor.
+- This means we can have a single "construct_mesh()" function
+	and call it from every go that needs a mesh constructed
+--]]
+
+local mesh_data = {
+	h01h02 = { -- Joint ID which also defines bodies
+		type = joint_settings.type,
+		frequency = 1000,
+		damping = 0
+	},
+	h01h03 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h01h10 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--[[
+	h01h09 = {
+		type = joint_settings.type,
+		frequency = 50,
+		damping = 0
+	},--]]
+	-- SECOND INNER VERTEX
+	h02h04 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--[[
+	h02h05 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--]]
+	h02h06 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--[[
+	h02h07 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--]]
+	h02h08 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	-- OUTER VERTICES
+	h03h11 = {
+		type = joint_settings.type,
+		frequency = 10,
+		damping = 0.5
+	},
+	h11h04 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h04h05 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h05h06 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h06h07 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h07h08 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h08h09 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h09h10 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},--[[
+	h04h06 = {
+		type = joint_settings.type,
+		frequency = joint_settings.frequency,
+		damping = joint_settings.damping
+	},
+	h06h08 = {
+		type = joint_settings.type,
+		frequency = 10,
+		damping = joint_settings.damping
+	},((]]
+}
+
+function init(self)
+	construct_mesh(mesh_data)
+end
+
+function construct_mesh(mesh_data)
+	-- Shorthands
+	local v = vmath.vector3(0)
+	local co = "#co"
+	
+	for joint, settings in pairs(mesh_data) do
+		-- Extract bodies
+		local bodya = string.sub(joint, 1, 3)..co
+		local bodyb = string.sub(joint, 4, 6)..co
+
+		-- Get distance between them
+		local posa = go.get_position(bodya)
+		local posb = go.get_position(bodyb)
+		
+		local clength = math.pow((posb.x - posa.x), 2) + math.pow((posb.y - posa.y), 2)
+		clength = math.sqrt(clength)
+
+		-- Create joint
+		physics.create_joint(
+			settings.type, bodya, 
+			joint, v, 
+			bodyb, v,
+			{ frequency = settings.frequency, damping = settings.damping, length = clength }
+		)
+		pprint(physics.get_joint_properties(bodya, joint))
+	end
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+
+end

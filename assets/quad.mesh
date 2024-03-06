@@ -1,0 +1,4 @@
+material: "/assets/mesh.material"
+vertices: "/assets/quad.buffer"
+textures: "/assets/hair/hair_main.png"
+primitive_type: PRIMITIVE_TRIANGLES

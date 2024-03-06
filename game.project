@@ -3,7 +3,7 @@ title = Defold Sandbox
 dependencies#0 = https://github.com/d954mas/defold-box2d/archive/refs/tags/1.0.0.zip
 
 [bootstrap]
-main_collection = /wavemaker/wavemaker.collectionc
+main_collection = /windshader/windshader.collectionc
 
 [input]
 game_binding = /input/game.input_bindingc

@@ -1,0 +1,132 @@
+
+local root = "root#co"
+local hair1 = "hair1-"
+local hair2 = "hair2-"
+local co = "#co"
+
+local joint_settings = {
+	type = physics.JOINT_TYPE_SPRING,
+	frequency = 5,
+	damping = 0.2
+}
+
+local v = vmath.vector3(0)
+
+function init(self)
+
+	msg.post(".", "acquire_input_focus")
+	
+	-- Initial constraints
+	physics.create_joint(
+		physics.JOINT_TYPE_FIXED, 
+		root, 
+		"root.2-1", v, 
+		"hair2-1#co", v
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_FIXED, 
+		root, 
+		"root.2-7", v, 
+		"hair2-7#co", v
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_FIXED, 
+		"hair2-1#co", 
+		"2-1.2-7", v, 
+		"hair2-7#co", v
+	)
+
+	-- Connect inner and outer
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 1 ..co, 
+		"1-1.2-7", v, 
+		hair2.. 7 ..co, v, joint_settings
+	)
+	
+	joint_settings.length = 90
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 1 ..co, 
+		"1-1.1-2", v, 
+		hair1.. 2 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 1 ..co, 
+		"1-1.2-1", v, 
+		hair2.. 1 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 2 ..co, 
+		"1-2.2-4", v, 
+		hair2.. 4 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 2 ..co, 
+		"1-2.2-2", v, 
+		hair2.. 2 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 2 ..co, 
+		"1-2.2-3", v, 
+		hair2.. 3 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 2 ..co, 
+		"1-2.2-5", v, 
+		hair2.. 5 ..co, v, joint_settings
+	)
+	
+	joint_settings.length = 80
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 1 ..co, 
+		"1-1.2-2", v, 
+		hair2.. 2 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 1 ..co, 
+		"1-1.2-6", v, 
+		hair2.. 6 ..co, v, joint_settings
+	)
+	physics.create_joint(
+		physics.JOINT_TYPE_SPRING,  
+		hair1.. 2 ..co, 
+		"1-2.2-6", v, 
+		hair2.. 6 ..co, v, joint_settings
+	)
+
+	connect_outer(self)
+	
+end
+
+function connect_outer(self)
+	
+	for i = 1, 6 do
+		local coa = hair2 .. i .. co
+		local cob = hair2 .. (i + 1) .. co
+		local joint_id = "2-"..i..".".."2-"..(i+1)
+		physics.create_joint(
+			physics.JOINT_TYPE_SPRING, 
+			coa, 
+			joint_id, v, 
+			cob, v, joint_settings
+		)
+	end
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+
+end
